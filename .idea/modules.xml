@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/praktikummaps.iml" filepath="$PROJECT_DIR$/praktikummaps.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android/praktikummaps_android.iml" filepath="$PROJECT_DIR$/android/praktikummaps_android.iml" />
-    </modules>
-  </component>
-</project>
