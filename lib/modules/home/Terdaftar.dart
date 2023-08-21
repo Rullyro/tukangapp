@@ -4,13 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:praktikummaps/modules/home/Terdaftar.dart';
-import 'package:praktikummaps/modules/home/proses.dart';
-import 'package:praktikummaps/main.dart';
+import 'package:tu/modules/home/Terdaftar.dart';
+import 'package:tu/modules/home/proses.dart';
+import 'package:tu/main.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:praktikummaps/modules/home/searched.dart';
-import 'package:praktikummaps/controllers/auth_controller.dart';
-import 'package:praktikummaps/maps/mymaps.dart';
+import 'package:tu/modules/home/searched.dart';
+import 'package:tu/controllers/auth_controller.dart';
+import 'package:tu/maps/mymaps.dart';
 
 import 'home.dart';
 
@@ -188,17 +188,17 @@ class _Terdaftar1 extends State<Terdaftar1> {
                               width: 100,
                             ),
                             Icon(
-                              Icons.account_box_rounded,
-                              color: Colors.white,),
+                              Icons.history,
+                              color: Colors.black,),
                             SizedBox(
                               width: 10,
                             ),
                             Text(
-                              "Menu Akun Anda",
+                              "Menu History",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: 15
+                                  color: Colors.black,
+                                  fontSize: 24
                               ),
                             )
                           ],
@@ -223,7 +223,7 @@ class _Terdaftar1 extends State<Terdaftar1> {
                       children: [
                         Container(
                             width: 350,
-                            height: 250,
+                            height: 500,
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(30)
@@ -233,72 +233,60 @@ class _Terdaftar1 extends State<Terdaftar1> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Text("Informasi Akun",
+                                Text("History",
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.bold,
                                   ),),
-                                Container(
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Text("Email : ",
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        fontSize: 15
-                                      ),),
-                                      Text(_email,
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                            fontSize: 15
-                                        ),),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text("Password :",
-                                        style: TextStyle(
-                                            fontSize: 15
-                                        ),),
-                                      Text("********")
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    try {
-                                      await FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
-                                      print("Password reset email sent.");
-                                    } catch (e) {
-                                      print(e);
-                                    }
-                                    showDialog(
-                                      context: context,
-                                      builder: (
-                                          BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text("Reset Password Berhasil"),
-                                          content: Text(
-                                              "Cek E-Mail anda !"),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              child: Text("OK"),
-                                              onPressed: () {
-                                                Navigator.of(
-                                                    context)
-                                                    .pop();
-                                              },
-                                            ),
-                                          ],
+                                Expanded(
+                                    child: StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('history')
+                                          .where('email', isEqualTo: FirebaseAuth.instance.currentUser?.email)
+                                          .snapshots(),
+                                      builder: (context, snapshot) {
+                                        return (snapshot.connectionState == ConnectionState.waiting)
+                                            ? Center(child: CircularProgressIndicator())
+                                            : ListView.builder(
+                                            itemCount: snapshot.data!.docs.length,
+                                            itemBuilder: (context, index) {
+                                              DocumentSnapshot data = snapshot.data!
+                                                  .docs[index];
+                                              {
+                                                return Column(
+                                                    mainAxisAlignment: MainAxisAlignment
+                                                        .start,
+                                                    children: [
+                                                      ListTile(
+                                                        title: Text("Rp. "+ data['totalharga'],
+                                                          style: TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        leading: CircleAvatar(
+                                                          child: Image.network(
+                                                            data['img'],
+                                                            width: 100,
+                                                            height: 50,
+                                                            fit: BoxFit.contain,
+                                                          ),
+                                                          backgroundColor: Colors.white,
+                                                        ),
+                                                        trailing: Icon(
+                                                          Icons.verified_user_rounded,
+                                                          color: Colors.green,
+                                                          size: 30,
+                                                        ),
+                                                      )
+                                                    ]
+                                                );
+                                              }
+                                            }
                                         );
                                       },
-                                    );
-                                  },
-                                  child: Text('Reset Password'),
+                                    )
+
                                 ),
 
                               ],
