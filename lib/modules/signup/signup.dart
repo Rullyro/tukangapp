@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:praktikummaps/modules/signup/signup_controller.dart';
+import 'package:tu/modules/signup/signup_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../main.dart';
 import '../../utils/constant.dart';
+
 class SignupView extends GetView<SignupController> {
   final authC = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SignupView',
-        style: TextStyle(
-          color: Colors.black
-        ),),
+        title: Text('Signup View',
+          style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500
+          ),),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.orange.shade500,
       ),
       body:
-          Container(
+      SingleChildScrollView(
+          child: Container(
             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  appTheme.secondaryHeaderColor.withOpacity(.9),
-                  appTheme.primaryColor
-                ]
-                )
+                color: Colors.white
             ),
             child: Padding(
               padding: const EdgeInsets.all(25),
               child: Column(
                 children: [
+                  Image.asset('img/logo.jpg'),
                   TextField(
                     controller: controller.emailC,
                     decoration: InputDecoration(labelText: "Email"),
@@ -44,7 +44,7 @@ class SignupView extends GetView<SignupController> {
                       width: 200,
                       height: 35,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.black,
                           borderRadius: BorderRadius.circular(6.0),
                           boxShadow: [
                             BoxShadow(
@@ -57,9 +57,10 @@ class SignupView extends GetView<SignupController> {
                         child: InkWell(
                           onTap: ()=> authC.signup(controller.emailC.text, controller.passC.text),
                           child: Center(
-                            child: Text("Registration",
+                            child: Text("Daftar",
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.orange.shade500,
+                                    fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                     letterSpacing: 1.0)),
                           ),
@@ -75,18 +76,17 @@ class SignupView extends GetView<SignupController> {
                       TextButton(
                         onPressed: () => Get.back(),
                         child: Text("LOGIN",
-                        style: TextStyle(
-                          color: Colors.deepOrange
-                        ),),
+                          style: TextStyle(
+                              color: Colors.deepOrange
+                          ),),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
           )
-
-
+      ),
     );
   }
 }

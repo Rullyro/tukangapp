@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 class MyMap extends StatefulWidget {
-  final String user_id;
-  MyMap(this.user_id);
-  @override
+  const MyMap({super.key});
+
   _MyMapState createState() => _MyMapState();
 }
 class _MyMapState extends State<MyMap> {
@@ -17,7 +16,7 @@ class _MyMapState extends State<MyMap> {
     return Scaffold(
         body: StreamBuilder(
           stream:
-          FirebaseFirestore.instance.collection('rumah').snapshots(),
+          FirebaseFirestore.instance.collection('location').snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (_added) {
               mymap(snapshot);
@@ -29,27 +28,13 @@ class _MyMapState extends State<MyMap> {
               mapType: MapType.normal,
               markers: {
                 Marker(
-                    position: LatLng(
-                      snapshot.data!.docs.singleWhere(
-                              (element) => element.id ==
-                              widget.user_id)['latitude'],
-                      snapshot.data!.docs.singleWhere(
-                              (element) => element.id ==
-                              widget.user_id)['longitude'],
-                    ),
+                    position: LatLng(double.parse(snapshot.data?.docs[0]['latitude']), double.parse(snapshot.data?.docs[0]['longitude'])),
                     markerId: MarkerId('id'),
                     icon: BitmapDescriptor.defaultMarkerWithHue(
                         BitmapDescriptor.hueMagenta)),
               },
               initialCameraPosition: CameraPosition(
-                  target: LatLng(
-                    snapshot.data!.docs.singleWhere(
-                            (element) => element.id ==
-                            widget.user_id)['latitude'],
-                    snapshot.data!.docs.singleWhere(
-                            (element) => element.id ==
-                            widget.user_id)['longitude'],
-                  ),
+                  target: LatLng(double.parse(snapshot.data?.docs[0]['latitude']), double.parse(snapshot.data?.docs[0]['longitude'])),
                   zoom: 14.47),
               onMapCreated: (GoogleMapController controller) async {
                 setState(() {
@@ -64,12 +49,7 @@ class _MyMapState extends State<MyMap> {
   Future<void> mymap(AsyncSnapshot<QuerySnapshot> snapshot) async {
     await _controller
         .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(
-          snapshot.data!.docs.singleWhere(
-                  (element) => element.id == widget.user_id)['latitude'],
-          snapshot.data!.docs.singleWhere(
-                  (element) => element.id == widget.user_id)['longitude'],
-        ),
+        target: LatLng(double.parse(snapshot.data?.docs[0]['latitude']), double.parse(snapshot.data?.docs[0]['longitude'])),
         zoom: 14.47)));
   }
 }

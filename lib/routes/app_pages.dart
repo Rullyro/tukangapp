@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:praktikummaps/modules/home/home.dart';
-import 'package:praktikummaps/modules/login/login.dart';
-import 'package:praktikummaps/modules/signup/signup.dart';
+import 'package:tu/modules/home/home.dart';
+import 'package:tu/modules/login/login.dart';
+import 'package:tu/modules/signup/signup.dart';
 import '../modules/home/home_binding.dart';
 import '../modules/login/login_binding.dart';
 import '../modules/signup/signup_binding.dart';

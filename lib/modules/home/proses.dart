@@ -2,14 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:praktikummaps/modules/home/Terdaftar.dart';
-import 'package:praktikummaps/modules/home/home.dart';
-import 'package:praktikummaps/modules/home/proses.dart';
-import 'package:praktikummaps/main.dart';
+import 'package:tu/modules/home/Terdaftar.dart';
+import 'package:tu/modules/home/home.dart';
+import 'package:tu/modules/home/proses.dart';
+import 'package:tu/main.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:praktikummaps/modules/home/searched.dart';
-import 'package:praktikummaps/controllers/auth_controller.dart';
-import 'package:praktikummaps/maps/mymaps.dart';
+import 'package:tu/modules/home/searched.dart';
+import 'package:tu/controllers/auth_controller.dart';
+import 'package:tu/maps/mymaps.dart';
+
+import 'cekout.dart';
+import 'food.dart';
 
 
 int sel = 0;
@@ -38,11 +41,11 @@ class _ProsesState extends State<Proses> {
         label: "Explore"));
     items.add(BottomNavigationBarItem(
         activeIcon: Icon(
-          Icons.app_registration,
+          Icons.attach_money_rounded,
           color: appTheme.primaryColor,
         ),
         icon: Icon(
-          Icons.app_registration,
+          Icons.attach_money_rounded,
           color: Colors.black,
         ),
         label: "Progress"));
@@ -126,7 +129,7 @@ class _Proses1 extends State<Proses1> {
     });
   }
 
-
+  String? email = FirebaseAuth.instance.currentUser?.email;
   @override
   void initState(){
     super.initState();
@@ -141,13 +144,17 @@ class _Proses1 extends State<Proses1> {
     return Stack(
         children: <Widget>[
           Container(
-            height: height=850,//400
+            height: height=1300,
             //color: Colors.tealAccent,
             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  appTheme.primaryColor,
-                  appTheme.secondaryHeaderColor
-                ])),
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topLeft,
+                    colors: [
+                      appTheme.secondaryHeaderColor,
+                      appTheme.primaryColor
+                    ])
+            ),
             child: Column(
                 children: <Widget>[
                   SizedBox(
@@ -161,20 +168,20 @@ class _Proses1 extends State<Proses1> {
                           child: Row(
                             children: [
                               SizedBox(
-                                width: 100,
+                                width: 125,
                               ),
                               Icon(
                                 Icons.waving_hand,
-                                color: Colors.white,),
+                                color: Colors.black,),
                               SizedBox(
                                 width: 10,
                               ),
                               Text(
-                                "Menu Progress Anda",
+                                "Transaksi",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: 15
+                                  color: Colors.black,
+                                  fontSize: 24
                                 ),
                               )
                             ],
@@ -200,7 +207,7 @@ class _Proses1 extends State<Proses1> {
                           IntrinsicHeight(
                             child: SizedBox(
                               width: 350,
-                              height: 300,
+                              height: 500,
                               child: Container(
                                   decoration: BoxDecoration(
                                       color: Colors.white,
@@ -211,7 +218,7 @@ class _Proses1 extends State<Proses1> {
                                       SizedBox(
                                         height: 10,
                                       ),
-                                      Text("Terdaftar",
+                                      Text("Proses",
                                         textAlign: TextAlign.center
                                         ,
                                         style: TextStyle(
@@ -220,83 +227,96 @@ class _Proses1 extends State<Proses1> {
                                         ),),
                                       Expanded(
                                         child: StreamBuilder<QuerySnapshot>(
-                                          stream: FirebaseFirestore.instance
-                                              .collection('job')
-                                              .where('pendaftar', arrayContains: FirebaseAuth.instance.currentUser?.email)
-                                              .snapshots(),
+                                          stream: FirebaseFirestore.instance.collection('transaksi').where(
+                                              'email',
+                                              isEqualTo: FirebaseAuth.instance.currentUser?.email
+                                          ).snapshots(),
                                           builder: (context, snapshot) {
-                                            return (snapshot.connectionState == ConnectionState.waiting)
-                                                ? Center(child: CircularProgressIndicator())
-                                                : ListView.builder(
-                                              itemCount: snapshot.data!.docs.length,
+                                            if (!snapshot.hasData) return LinearProgressIndicator();
+                                            if (!snapshot.hasData || snapshot.data?.docs == null || (snapshot.data?.docs ?? []).isEmpty) {
+                                              return Container(
+                                                child: Text("kosong, silahkan menambah barang"),
+                                              );
+                                            }
+                                            return ListView.builder(
+                                              itemCount: snapshot.data?.docs.length,
                                               itemBuilder: (context, index) {
-                                                DocumentSnapshot data = snapshot.data!.docs[index];
-                                                return Container(
-                                                  color: Colors.white,
-                                                  padding: EdgeInsets.only(top: 16),
-                                                  child: Column(
-                                                    children: [
-                                                      ListTile(
-                                                        title: Text(data['name'],
-                                                          style: TextStyle(
-                                                            fontSize: 20,
-                                                            fontWeight: FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                        leading: CircleAvatar(
-                                                          child: Image.network(
-                                                            data['imageUrl'],
-                                                            width: 100,
-                                                            height: 50,
-                                                            fit: BoxFit.contain,
-                                                          ),
-                                                          backgroundColor: Colors.white,
-                                                        ),
-                                                        trailing: IconButton(
-                                                          icon: Icon(Icons.delete, color: Colors.black,),
-                                                          onPressed: () {
-                                                            showDialog(
-                                                              context: context,
-                                                              builder: (BuildContext context) {
-                                                                return AlertDialog(
-                                                                  title: Text("Confirm"),
-                                                                  content: Text("Apakah anda ingin membatalkan pendaftaran ?"),
-                                                                  actions: <Widget>[
-                                                                    TextButton(
-                                                                      child: Text("Cancel"),
-                                                                      onPressed: () {
-                                                                        Navigator.of(context).pop();
-                                                                      },
-                                                                    ),
-                                                                    TextButton(
-                                                                      child: Text("Delete"),
-                                                                      onPressed: () {
-                                                                        FirebaseFirestore.instance
-                                                                            .collection('job').doc(
-                                                                            data.id).update({
-                                                                          'pendaftar': ""});
-                                                                        Navigator.of(context).pop();
-                                                                      },
-                                                                    ),
-                                                                  ],
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                      ),
-                                                      Divider(
-                                                        thickness: 2,
-                                                      ),
-                                                    ],
-                                                  ),
+                                                var data = snapshot.data?.docs[index];
+                                                var harga = data?.get('harga') as List<dynamic>;
+                                                var img = data?.get('img') as List<dynamic>;
+                                                var nama = data?.get('nama') as List<dynamic>;
+                                                var price = data?.get('price') as List<dynamic>;
 
+                                                return Column(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: [
+                                                for (int i = 0; i < nama.length; i++)
+                                                  ListTile(
+                                                  title: Text(nama[i],
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  leading: CircleAvatar(
+                                                    child: Image.network(
+                                                      img[i],
+                                                      width: 100,
+                                                      height: 50,
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                    backgroundColor: Colors.white,
+                                                  ),
+                                                  trailing: IconButton(
+                                                    icon: Icon(Icons.delete, color: Colors.black,),
+                                                    onPressed: () async {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: Text("Confirm"),
+                                                            content: Text("Apakah anda ingin membatalkan transaksi ?"),
+                                                            actions: <Widget>[
+                                                              TextButton(
+                                                                child: Text("Cancel"),
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                },
+                                                              ),
+                                                              TextButton(
+                                                                child: Text("Delete"),
+                                                                onPressed: () async {
+                                                                  try {
+                                                                    await FirebaseFirestore.instance
+                                                                        .collection('transaksi').doc(data?.id)
+                                                                        .update({
+                                                                      'harga': FieldValue.arrayRemove([harga[i]]),
+                                                                      'img': FieldValue.arrayRemove([img[i]]),
+                                                                      'nama': FieldValue.arrayRemove([nama[i]]),
+                                                                      'price': FieldValue.arrayRemove([price[i]]),
+                                                                    });
+                                                                  } catch (e) {
+                                                                    print(e);
+                                                                  }
+                                                                  Navigator.of(context).pop();
+                                                                },
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                  ),
+                                                )
+                                                ]
                                                 );
                                               },
                                             );
                                           },
-                                        ),
+                                        )
+
                                       ),
+
 
                                     ],
                                   )
@@ -309,83 +329,57 @@ class _Proses1 extends State<Proses1> {
 
 
                         SizedBox(
-                          height: 50,
+                          height: 24,
                         ),
-                        Container(
-                            width: 350,
-                            height: 300,
-                            decoration: BoxDecoration(
-                                color: Colors.greenAccent,
-                                borderRadius: BorderRadius.circular(30)
-                            ),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text("Telah Diterima",
-                                  style: TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.bold,
-                                  ),),
-                                Expanded(
-                                  child: StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('job')
-                                        .where('acc', arrayContains: FirebaseAuth.instance.currentUser?.email)
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      return (snapshot.connectionState == ConnectionState.waiting)
-                                          ? Center(child: CircularProgressIndicator())
-                                          : ListView.builder(
-                                        itemCount: snapshot.data!.docs.length,
-                                        itemBuilder: (context, index) {
-                                          DocumentSnapshot data = snapshot.data!.docs[index];
-                                          return Container(
-                                            color: Colors.white,
-                                            padding: EdgeInsets.only(top: 16),
-                                            child: Column(
-                                              children: [
-                                                ListTile(
-                                                  onTap: (){
-                                                  },
-                                                  title: Text(data['name'],
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  subtitle: Text(data['gaji']),
-                                                  leading: CircleAvatar(
-                                                    child: Image.network(
-                                                      data['imageUrl'],
-                                                      width: 100,
-                                                      height: 50,
-                                                      fit: BoxFit.contain,
-                                                    ),
-                                                    backgroundColor: Colors.white,
-                                                  ),
-                                                  trailing: Icon(
-                                                    Icons.verified_outlined,
-                                                    color: Colors.green,
-                                                    size: 30,
-                                                  ),
-                                                ),
-                                                Divider(
-                                                  thickness: 2,
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
+                            Container(
+                              width: 200,
 
-                              ],
-                            )
-                        ),
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                                    ),
+                                    primary: Colors.deepOrange,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 35,
+                                      ),
+                                      Icon(Icons.shopping_cart_checkout),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text("Check out",
+                                        style: TextStyle(color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14),),
+                                    ],
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (
+                                          BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text("Check out"),
+                                          content: Text(
+                                              "Apakah anda ingin check out ?"),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text("Ya"),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => Cekout()));
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+                              ),
+                            ),
                         SizedBox(
                           height: 20,
                         ),

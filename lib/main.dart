@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:praktikummaps/routes/app_pages.dart';
-import 'package:praktikummaps/utils/loading.dart';
+import 'package:tu/routes/app_pages.dart';
+import 'package:tu/utils/loading.dart';
 import 'controllers/auth_controller.dart';
-import 'package:praktikummaps/utils/constant.dart';
+import 'package:tu/utils/constant.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ void main() async {
 }
 
 ThemeData appTheme = ThemeData(
-    primaryColor: Colors.black,
+    primaryColor: Colors.white,
     secondaryHeaderColor: Colors.deepOrangeAccent
 );
 

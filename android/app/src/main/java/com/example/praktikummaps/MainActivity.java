@@ -1,4 +1,4 @@
-package com.example.praktikummaps;
+package com.example.tu;
 
 import io.flutter.embedding.android.FlutterActivity;
 

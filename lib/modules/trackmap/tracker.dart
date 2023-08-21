@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:praktikummaps/maps/mymaps.dart';
+import 'package:tu/maps/mymaps.dart';
 import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:praktikummaps/modules/home/home_controller.dart';
+import 'package:tu/modules/home/home_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      MyMap(snapshot.data!.docs[index].id)));
+                                      MyMap()));
                             },
                           ),
                         );
